@@ -1,10 +1,10 @@
-name: "auto production release"
+name: "deploy production env"
 on:
   push:
     branches:
       - main
 jobs:
-  job:
+  deploy:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup
@@ -12,9 +12,8 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ssh_key
           chmod 600 ssh_key
       - name: Build
-        run: |
-          cd ${{ secrets.APP_ROOT_DIR }}
-      - name: Release
+        run: cd ${{ secrets.APP_ROOT_DIR }}
+      - name: Deploy
         run: |-
           ssh 
           -oStrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOSTNAME }} 
@@ -32,7 +31,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-          SLACK_TITLE: "Success to Release"
+          SLACK_TITLE: "Success to Deploy"
           SLACK_COLOR: good
           SLACK_MESSAGE: "${{ github.repository }}"
       - name: Notify
@@ -41,5 +40,5 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
           SLACK_COLOR: danger
-          SLACK_TITLE: "Failure to Release" 
+          SLACK_TITLE: "Failure to Deploy" 
           SLACK_MESSAGE: "${{ github.repository }}"
