@@ -1,0 +1,45 @@
+name: "auto production release"
+on:
+  push:
+    branches:
+      - main
+jobs:
+  job:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > ssh_key
+          chmod 600 ssh_key
+      - name: Build
+        run: |
+          cd ${{ secrets.APP_ROOT_DIR }}
+      - name: Release
+        run: |-
+          ssh 
+          -oStrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOSTNAME }} 
+          -p ${{ secrets.SERVER_PORT }} 
+          -i ssh_key 
+          "
+            cd ${{ secrets.APP_ROOT_DIR }} && 
+            chmod 755 ${{ secrets.APP_BEFORE_SCRIPT }} &&
+            . ${{ secrets.APP_BEFORE_SCRIPT }} &&
+            git pull origin main  && 
+            chmod 755 ${{ secrets.APP_AFTER_SCRIPT }} &&
+            . ./${{ secrets.APP_AFTER_SCRIPT }}
+          "
+      - name: Notify
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
+          SLACK_TITLE: "Success to Release"
+          SLACK_COLOR: good
+          SLACK_MESSAGE: "${{ github.repository }}"
+      - name: Notify
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
+          SLACK_COLOR: danger
+          SLACK_TITLE: "Failure to Release" 
+          SLACK_MESSAGE: "${{ github.repository }}"
