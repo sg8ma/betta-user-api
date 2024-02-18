@@ -21,11 +21,11 @@ jobs:
           -i ssh_key \
           " \
             cd /var/www/html/api.betta.fortuna.jp && \
-            chmod 755 ${{ secrets.APP_BEFORE_SCRIPT }} && \
-            . ${{ secrets.APP_BEFORE_SCRIPT }} && \
+            chmod 755 scripts/deploy_after.sh && \
+            . scripts/deploy_after.sh && \
             git pull origin main  &&  \
-            chmod 755 ${{ secrets.APP_AFTER_SCRIPT }} && \
-            . ./${{ secrets.APP_AFTER_SCRIPT }} \
+            chmod 755 scripts/deploy_before.sh && \
+            . scripts/deploy_before.sh \
           " 
       - name: Notify
         uses: rtCamp/action-slack-notify@v2
