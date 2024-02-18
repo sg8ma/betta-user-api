@@ -13,6 +13,8 @@ jobs:
           chmod 600 ssh_key
       - name: Build
         run: cd .
+      - name: Lint
+        run: cd .
       - name: Deploy
         run: |-
           ssh \
@@ -33,9 +35,9 @@ jobs:
           SLACK_USERNAME: GitHub
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-          SLACK_TITLE: "Success to Deploy"
+          SLACK_TITLE: "Success"
           SLACK_COLOR: good
-          SLACK_MESSAGE: "${{ github.repository }}"
+          SLACK_MESSAGE: "${{ github.repository }} - ${{ github.event.head_commit.message }}"
       - name: Notify
         if: failure()
         uses: rtCamp/action-slack-notify@v2
@@ -43,6 +45,6 @@ jobs:
           SLACK_USERNAME: GitHub
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-          SLACK_TITLE: "Failure to Deploy" 
+          SLACK_TITLE: "Failure" 
           SLACK_COLOR: danger
-          SLACK_MESSAGE: "${{ github.repository }}"
+          SLACK_MESSAGE: "${{ github.repository }} - ${{ github.event.head_commit.message }}"
