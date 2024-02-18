@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+env:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
@@ -15,21 +16,23 @@ jobs:
         run: cd .
       - name: Deploy
         run: |-
-          ssh 
-          -oStrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOSTNAME }} 
-          -p ${{ secrets.SERVER_PORT }} 
-          -i ssh_key 
-          "
-            cd ${{ secrets.APP_ROOT_DIR }} && 
-            chmod 755 ${{ secrets.APP_BEFORE_SCRIPT }} &&
-            . ${{ secrets.APP_BEFORE_SCRIPT }} &&
-            git pull origin main  && 
-            chmod 755 ${{ secrets.APP_AFTER_SCRIPT }} &&
-            . ./${{ secrets.APP_AFTER_SCRIPT }}
-          "
+          ssh \
+          -oStrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOSTNAME }} \
+          -p ${{ secrets.SERVER_PORT }} \
+          -i ssh_key \
+          " \
+            cd ${{ secrets.APP_ROOT_DIR }} && \
+            chmod 755 ${{ secrets.APP_BEFORE_SCRIPT }} && \
+            . ${{ secrets.APP_BEFORE_SCRIPT }} && \
+            git pull origin main  &&  \
+            chmod 755 ${{ secrets.APP_AFTER_SCRIPT }} && \
+            . ./${{ secrets.APP_AFTER_SCRIPT }} \
+          " 
       - name: Notify
         uses: rtCamp/action-slack-notify@v2
         env:
+          SLACK_USERNAME: GitHub
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
           SLACK_TITLE: "Success to Deploy"
           SLACK_COLOR: good
@@ -38,7 +41,9 @@ jobs:
         if: failure()
         uses: rtCamp/action-slack-notify@v2
         env:
+          SLACK_USERNAME: GitHub
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-          SLACK_COLOR: danger
           SLACK_TITLE: "Failure to Deploy" 
+          SLACK_COLOR: danger
           SLACK_MESSAGE: "${{ github.repository }}"
