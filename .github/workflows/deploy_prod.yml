@@ -1,4 +1,4 @@
-name: "deploy production env"
+name: "Deploy production env"
 on:
   push:
     branches:
