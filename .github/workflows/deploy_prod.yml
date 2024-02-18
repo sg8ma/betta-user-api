@@ -12,7 +12,7 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ssh_key
           chmod 600 ssh_key
       - name: Build
-        run: cd ${{ secrets.APP_ROOT_DIR }}
+        run: cd .
       - name: Deploy
         run: |-
           ssh 
