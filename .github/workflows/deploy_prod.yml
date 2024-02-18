@@ -20,7 +20,7 @@ jobs:
           -p ${{ secrets.SERVER_PORT }} \
           -i ssh_key \
           " \
-            cd ${{ secrets.APP_ROOT_DIR }} && \
+            cd /var/www/html/api.betta.fortuna.jp && \
             chmod 755 ${{ secrets.APP_BEFORE_SCRIPT }} && \
             . ${{ secrets.APP_BEFORE_SCRIPT }} && \
             git pull origin main  &&  \
